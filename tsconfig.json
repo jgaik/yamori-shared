@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "declaration": true,
+    "outDir": "./dist",
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "declarationDir": "./dist", // Place .d.ts files in dist
+    "moduleResolution": "node",
+    "sourceMap": true, // Generate source maps for easier debugging
+    "isolatedModules": true // To make sure TypeScript can compile modules individually
+  },
+  "include": ["src/**/*"]
+}

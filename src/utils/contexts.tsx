@@ -7,7 +7,6 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { isNil } from "./assertions";
 
 type CreateSimpleContextReturn<Name extends string, T> = {
   [K in
@@ -22,12 +21,19 @@ type CreateSimpleContextReturn<Name extends string, T> = {
     : never;
 };
 
+const DEFAULT_CONTEXT_VALUE = Symbol();
+
 export function createSimpleContext<T, Name extends string>(
   name: Name,
-  initialValue: T
+  initialValue: T,
+  errorPrefix?: string
 ): CreateSimpleContextReturn<Name, T> {
-  const ContextValue = createContext<T | null>(null);
-  const ContextSetter = createContext<Dispatch<SetStateAction<T>> | null>(null);
+  const ContextValue = createContext<T | typeof DEFAULT_CONTEXT_VALUE>(
+    DEFAULT_CONTEXT_VALUE
+  );
+  const ContextSetter = createContext<
+    Dispatch<SetStateAction<T>> | typeof DEFAULT_CONTEXT_VALUE
+  >(DEFAULT_CONTEXT_VALUE);
 
   ContextValue.displayName = `${name}Context`;
   ContextSetter.displayName = `${name}ContextSetter`;
@@ -36,27 +42,25 @@ export function createSimpleContext<T, Name extends string>(
     const [value, setValue] = useState<T>(initialValue);
 
     return (
-      <ContextValue.Provider value={value}>
-        <ContextSetter.Provider value={setValue}>
-          {children}
-        </ContextSetter.Provider>
-      </ContextValue.Provider>
+      <ContextSetter.Provider value={setValue}>
+        <ContextValue.Provider value={value}>{children}</ContextValue.Provider>
+      </ContextSetter.Provider>
     );
   };
 
   Provider.displayName = `${name}Provider`;
 
   const contextGetter =
-    <C,>(context: Context<C | null>) =>
+    <C,>(context: Context<C | typeof DEFAULT_CONTEXT_VALUE>) =>
     () => {
       const contextValue = useContext(context);
 
-      if (isNil(contextValue)) {
+      if (contextValue === DEFAULT_CONTEXT_VALUE) {
+        const prefix = errorPrefix ? `[${errorPrefix}] ` : "";
+        const hookName = `use${context.displayName!.replace(/Context$/, "")}`;
+
         throw new Error(
-          `Component using use${context.displayName!.replace(
-            /Context$/,
-            ""
-          )} hook must be a child of the ${Provider.displayName}.`
+          `${prefix}${hookName} hook must be used within the ${Provider.displayName} component.`
         );
       }
 

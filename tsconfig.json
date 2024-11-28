@@ -9,9 +9,6 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    },
     "declarationDir": "./dist", // Place .d.ts files in dist
     "moduleResolution": "node",
     "sourceMap": true, // Generate source maps for easier debugging

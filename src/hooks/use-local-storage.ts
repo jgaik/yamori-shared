@@ -1,11 +1,11 @@
-import { useCallback, useLayoutEffect, useState } from 'react';
-import { isNil } from '@/utils';
+import { useCallback, useLayoutEffect, useState } from "react";
+import { isNil } from "../utils";
 
 export function useLocalStorage<T>(
   key: string
 ): [value: T | null, setValue: (value: T) => void, removeKey: () => void] {
   const [value, setValue] = useState<T | null>(() => {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
 
     const storedValue = window.localStorage.getItem(key);
 
@@ -18,7 +18,7 @@ export function useLocalStorage<T>(
       window.localStorage.setItem(key, JSON.stringify(value));
 
       window.dispatchEvent(
-        new CustomEvent('local-storage', {
+        new CustomEvent("local-storage", {
           detail: {
             key,
             value: JSON.stringify(value),
@@ -49,14 +49,14 @@ export function useLocalStorage<T>(
       }
     };
 
-    window.addEventListener('storage', handleStorage);
+    window.addEventListener("storage", handleStorage);
 
-    window.addEventListener('local-storage', handleLocalStorage);
+    window.addEventListener("local-storage", handleLocalStorage);
 
     return () => {
-      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener("storage", handleStorage);
 
-      window.removeEventListener('local-storage', handleLocalStorage);
+      window.removeEventListener("local-storage", handleLocalStorage);
     };
   }, [key]);
 
@@ -64,7 +64,7 @@ export function useLocalStorage<T>(
     window.localStorage.removeItem(key);
 
     window.dispatchEvent(
-      new CustomEvent('local-storage', {
+      new CustomEvent("local-storage", {
         detail: {
           key,
           value: null,

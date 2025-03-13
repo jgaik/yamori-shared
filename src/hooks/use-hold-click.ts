@@ -1,3 +1,5 @@
+"use client";
+
 import { HTMLAttributes, useMemo, useRef } from "react";
 
 export function useHoldClick(

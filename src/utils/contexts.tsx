@@ -6,7 +6,7 @@ import React, {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
-  useContext,
+  use,
   useState,
 } from "react";
 
@@ -55,7 +55,7 @@ export function createSimpleContext<T, Name extends string>(
   const contextGetter =
     <C,>(context: Context<C | typeof DEFAULT_CONTEXT_VALUE>) =>
     () => {
-      const contextValue = useContext(context);
+      const contextValue = use(context);
 
       if (contextValue === DEFAULT_CONTEXT_VALUE) {
         const prefix = errorPrefix ? `[${errorPrefix}] ` : "";

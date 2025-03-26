@@ -1,6 +1,6 @@
 {
   "name": "@yamori-shared/react-utilities",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "",
   "type": "module",
   "module": "dist/index.js",

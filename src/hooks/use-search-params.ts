@@ -16,7 +16,7 @@ export type SearchParamsSetter<K extends string> = (
     | Partial<Record<K, string | null>>
     | ((prev: Partial<Record<K, string>>) => Partial<Record<K, string | null>>)
     | null,
-  options?: { replace?: boolean }
+  options?: { replace?: boolean; dispatchEvent?: boolean }
 ) => void;
 
 export function useSearchParams<K extends string>() {
@@ -32,11 +32,22 @@ export function useSearchParams<K extends string>() {
 
   const setParams = useCallback<SearchParamsSetter<K>>(
     (updater, options = {}) => {
+      const updateHistory = (params?: URLSearchParams) => {
+        const newUrl =
+          window.location.pathname +
+          (params?.toString() ? `?${params}` : "") +
+          window.location.hash;
+
+        if (options.replace) {
+          window.history.replaceState({}, "", newUrl);
+        } else {
+          window.history.pushState({}, "", newUrl);
+        }
+        if (options.dispatchEvent) window.dispatchEvent(new Event("popstate"));
+      };
+
       if (updater === null) {
-        const newUrl = window.location.pathname + window.location.hash;
-        options.replace
-          ? window.history.replaceState({}, "", newUrl)
-          : window.history.pushState({}, "", newUrl);
+        updateHistory();
         setParamsState({});
         return;
       }
@@ -55,17 +66,7 @@ export function useSearchParams<K extends string>() {
         }
       });
 
-      const newUrl =
-        window.location.pathname +
-        (urlParams.toString() ? `?${urlParams}` : "") +
-        window.location.hash;
-
-      if (options.replace) {
-        window.history.replaceState({}, "", newUrl);
-      } else {
-        window.history.pushState({}, "", newUrl);
-      }
-
+      updateHistory(urlParams);
       setParamsState(next as Partial<Record<K, string>>);
     },
     []

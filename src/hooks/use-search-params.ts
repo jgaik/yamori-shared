@@ -70,7 +70,9 @@ export function useSearchParams<K extends string>() {
         });
       } else {
         getTypedObjectEntries(updater).forEach(([key, value]) => {
-          urlParams.set(key, value ?? "");
+          if (value) {
+            urlParams.set(key, value);
+          }
         });
         next = updater;
       }

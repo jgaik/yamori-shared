@@ -58,24 +58,18 @@ export function useSearchParams<K extends string>() {
 
       if (typeof updater === "function") {
         const prev = parseParams<K>();
-        const updates = updater(prev);
-        next = { ...prev, ...updates } as Record<string, string | null>;
-
-        Object.entries(next).forEach(([key, value]) => {
-          if (value) {
-            urlParams.set(key, value);
-          } else {
-            delete next[key];
-          }
-        });
+        next = { ...prev, ...updater(prev) };
       } else {
-        getTypedObjectEntries(updater).forEach(([key, value]) => {
-          if (value) {
-            urlParams.set(key, value);
-          }
-        });
         next = updater;
       }
+
+      Object.entries(next).forEach(([key, value]) => {
+        if (value) {
+          urlParams.set(key, value);
+        } else {
+          delete next[key];
+        }
+      });
 
       updateHistory(urlParams);
       setParamsState(next as Partial<Record<K, string>>);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { getTypedObjectEntries } from "../utils";
 
 function parseParams<K extends string>(): Partial<Record<K, string>> {
   const searchParams = new URLSearchParams(window.location.search);
@@ -13,7 +14,7 @@ function parseParams<K extends string>(): Partial<Record<K, string>> {
 
 export type SearchParamsSetter<K extends string> = (
   updater:
-    | Partial<Record<K, string | null>>
+    | Partial<Record<K, string>>
     | ((prev: Partial<Record<K, string>>) => Partial<Record<K, string | null>>)
     | null,
   options?: { replace?: boolean; dispatchEvent?: boolean }
@@ -52,19 +53,27 @@ export function useSearchParams<K extends string>() {
         return;
       }
 
-      const prev = parseParams<K>();
-      const updates = typeof updater === "function" ? updater(prev) : updater;
-
-      const next = { ...prev, ...updates } as Record<string, string | null>;
       const urlParams = new URLSearchParams();
+      let next: Partial<Record<string, string | null>>;
 
-      Object.entries(next).forEach(([key, value]) => {
-        if (value) {
-          urlParams.set(key, value);
-        } else {
-          delete next[key];
-        }
-      });
+      if (typeof updater === "function") {
+        const prev = parseParams<K>();
+        const updates = updater(prev);
+        next = { ...prev, ...updates } as Record<string, string | null>;
+
+        Object.entries(next).forEach(([key, value]) => {
+          if (value) {
+            urlParams.set(key, value);
+          } else {
+            delete next[key];
+          }
+        });
+      } else {
+        getTypedObjectEntries(updater).forEach(([key, value]) => {
+          urlParams.set(key, value ?? "");
+        });
+        next = updater;
+      }
 
       updateHistory(urlParams);
       setParamsState(next as Partial<Record<K, string>>);

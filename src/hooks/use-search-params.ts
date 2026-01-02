@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getTypedObjectEntries } from "../utils";
 
 function parseParams<K extends string>(): Partial<Record<K, string>> {
   const searchParams = new URLSearchParams(window.location.search);
@@ -14,7 +13,7 @@ function parseParams<K extends string>(): Partial<Record<K, string>> {
 
 export type SearchParamsSetter<K extends string> = (
   updater:
-    | Partial<Record<K, string>>
+    | Partial<Record<K, string | null>>
     | ((prev: Partial<Record<K, string>>) => Partial<Record<K, string | null>>)
     | null,
   options?: { replace?: boolean; dispatchEvent?: boolean }

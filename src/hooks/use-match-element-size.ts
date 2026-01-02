@@ -12,17 +12,18 @@ export function useMatchElementSize(
     if (!source || !target) return;
 
     const resize = () => {
-      const rect = target.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
+      const rect = source.getBoundingClientRect();
 
-      source.style.width = `${rect.width}px`;
-      source.style.height = `${rect.height}px`;
+      target.style.width = `${rect.width}px`;
+      target.style.height = `${rect.height}px`;
 
-      if (source instanceof HTMLCanvasElement) {
-        source.width = Math.round(rect.width * dpr);
-        source.height = Math.round(rect.height * dpr);
+      if (target instanceof HTMLCanvasElement) {
+        const dpr = window.devicePixelRatio || 1;
 
-        const ctx = source.getContext("2d");
+        target.width = Math.round(rect.width * dpr);
+        target.height = Math.round(rect.height * dpr);
+
+        const ctx = target.getContext("2d");
         ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
     };
@@ -30,7 +31,7 @@ export function useMatchElementSize(
     resize();
 
     const observer = new ResizeObserver(resize);
-    observer.observe(target);
+    observer.observe(source);
 
     return () => observer.disconnect();
   }, [sourceRef, targetRef]);

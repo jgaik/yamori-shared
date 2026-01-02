@@ -1,5 +1,6 @@
 {
   "name": "@yamori-shared/react-utilities",
+  "repository": "https://github.com/jgaik/yamori-shared",
   "version": "1.10.0",
   "description": "",
   "type": "module",

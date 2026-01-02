@@ -2,8 +2,8 @@ import { RefObject } from "react";
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
 
 export function useMatchElementSize(
-  sourceRef: RefObject<HTMLElement>,
-  targetRef: RefObject<HTMLElement>
+  sourceRef: RefObject<HTMLElement | null>,
+  targetRef: RefObject<HTMLElement | null>
 ) {
   useIsomorphicLayoutEffect(() => {
     const source = sourceRef.current;
